@@ -1,0 +1,14 @@
+title Creating a new note in SPA
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+
+note over browser:
+The POST request contains the content type
+end note
+
+note over server:
+The server pharse the data according 
+to the content type
+end note
+
+server-->browser: HTTP 201 (Created)
