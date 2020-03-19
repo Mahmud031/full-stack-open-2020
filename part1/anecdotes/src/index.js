@@ -1,6 +1,15 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+// Header component
+const Header = (props) => {
+    return (
+        <h1>
+            {props.header}
+        </h1>
+    )
+}
+
 // Button component
 const Button = ({ handleClick, name}) => {
     return(
@@ -58,15 +67,22 @@ const App = (props) => {
         updateVotes(newVotes)
     }
 
+    var maxVotes = Math.max(... votes)
+    var posOfMax = votes.indexOf(maxVotes)
+    console.log(maxVotes, posOfMax)
 
     return (
     <div>
+        <Header header='Anecdote of the day' />
         {props.anecdotes[selected]}
         <DisplayVote votes={votes} selected={selected} />
         <div>
             <Button handleClick={onVoteButtonClicked} name='vote' />
             <Button handleClick={onNextButtonClicked} name='next anecdote' />
         </div>
+        <Header header='Anecdote with most votes' />
+        {props.anecdotes[posOfMax]}
+        <DisplayVote votes={votes} selected={posOfMax} />
     </div>
     )
 }
