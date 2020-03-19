@@ -32,13 +32,15 @@ const App = () => {
     // save clicks of each button to own state
     const [good, setGood] = useState(0)
     const [neutral, setNeutral] = useState(0)
-    const [bad, setBad] = useState(0)
-
-    
+    const [bad, setBad] = useState(0)  
 
     const onGoodClicked = () => setGood(good + 1)
     const onBadClicked = () => setBad(bad + 1)
     const onNeutralClicked = () => setNeutral(neutral + 1)
+
+    var all = good + neutral + bad
+    var avg = ((good * 1) + (neutral * 0) + (bad * -1)) / all
+    var positive = (good / all) * 100
 
     return (
         <div>
@@ -55,7 +57,9 @@ const App = () => {
             <Display name='good' value={good} />
             <Display name='neutral' value={neutral} />
             <Display name='bad' value={bad} />
-
+            <Display name='all' value={all} />
+            <Display name='average' value={avg} />
+            <Display name='positive' value={positive + ' %'} />
         </div>
     )
 }
