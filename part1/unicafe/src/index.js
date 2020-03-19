@@ -28,6 +28,17 @@ const Display = ({name, value}) => {
     )
 }
 
+// Add table row
+
+const TableRow = ({name, value}) => {
+    return(
+        <tr>
+            <td>{name}</td>
+            <td>{value}</td>
+        </tr>
+    )
+}
+
 // statistics component
 const Statistics = ({good, neutral, bad}) => {
     if (good === 0 && neutral === 0 && bad === 0){
@@ -42,7 +53,7 @@ const Statistics = ({good, neutral, bad}) => {
         var avg = ((good * 1) + (neutral * 0) + (bad * -1)) / all
         var positive = (good / all) * 100
 
-        return (
+/*        return (
             <>
                 <Display name='good' value={good} />
                 <Display name='neutral' value={neutral} />
@@ -51,6 +62,20 @@ const Statistics = ({good, neutral, bad}) => {
                 <Display name='average' value={avg} />
                 <Display name='positive' value={positive + ' %'} />
             </>
+        )*/
+
+        // for 1.11
+        return(
+            <table>
+                <tbody>
+                    <TableRow name='good' value={good} />
+                    <TableRow name='neutral' value={neutral} />
+                    <TableRow name='bad' value={bad} />
+                    <TableRow name='all' value={all} />
+                    <TableRow name='average' value={avg.toFixed(1)} />
+                    <TableRow name='positive' value={positive.toFixed(1) + ' %'} />
+                </tbody>
+            </table>
         )
     }
 }
