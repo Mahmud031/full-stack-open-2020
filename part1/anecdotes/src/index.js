@@ -10,6 +10,15 @@ const Button = ({ handleClick, name}) => {
     )
 }
 
+// DisplayVote component
+const DisplayVote = ({votes, selected}) => {
+    return(
+        <div>
+            has {votes[selected]} votes
+        </div>
+    )
+}
+
 // Random num 
 const getRandomNumber = (min, max) => {
     console.log(min, max)
@@ -22,6 +31,12 @@ const App = (props) => {
     const [selected, setSelected] = useState(getRandomNumber(0,props.anecdotes.length - 1))
     console.log(selected, props.anecdotes.length, getRandomNumber(0, props.anecdotes.length - 1))
 
+    // array of votes
+
+    var emptyArray = Array(props.anecdotes.length).fill(0)
+    const [votes, updateVotes] = useState(emptyArray)
+
+    // next button event
     const onNextButtonClicked = () => {
         var randomNum = getRandomNumber(0,props.anecdotes.length - 1)
 
@@ -34,10 +49,22 @@ const App = (props) => {
         setSelected(randomNum)
     }
 
+    // vote button event
+    const onVoteButtonClicked = () => {
+        // Create a copy of the current votes and add a new vote
+        var newVotes = [... votes] 
+        newVotes[selected] += 1
+
+        updateVotes(newVotes)
+    }
+
+
     return (
     <div>
         {props.anecdotes[selected]}
+        <DisplayVote votes={votes} selected={selected} />
         <div>
+            <Button handleClick={onVoteButtonClicked} name='vote' />
             <Button handleClick={onNextButtonClicked} name='next anecdote' />
         </div>
     </div>
