@@ -30,20 +30,29 @@ const Display = ({name, value}) => {
 
 // statistics component
 const Statistics = ({good, neutral, bad}) => {
-    var all = good + neutral + bad
-    var avg = ((good * 1) + (neutral * 0) + (bad * -1)) / all
-    var positive = (good / all) * 100
+    if (good === 0 && neutral === 0 && bad === 0){
+        return (
+            <>
+                No feedback given
+            </>
+        )
+    }
+    else {
+        var all = good + neutral + bad
+        var avg = ((good * 1) + (neutral * 0) + (bad * -1)) / all
+        var positive = (good / all) * 100
 
-    return (
-        <>
-            <Display name='good' value={good} />
-            <Display name='neutral' value={neutral} />
-            <Display name='bad' value={bad} />
-            <Display name='all' value={all} />
-            <Display name='average' value={avg} />
-            <Display name='positive' value={positive + ' %'} />
-        </>
-    )
+        return (
+            <>
+                <Display name='good' value={good} />
+                <Display name='neutral' value={neutral} />
+                <Display name='bad' value={bad} />
+                <Display name='all' value={all} />
+                <Display name='average' value={avg} />
+                <Display name='positive' value={positive + ' %'} />
+            </>
+        )
+    }
 }
 
 const App = () => {
@@ -65,9 +74,7 @@ const App = () => {
                 <Button handleClick={onNeutralClicked} name='neutral' />
                 <Button handleClick={onBadClicked} name='bad' />
             </div>
-            <br />
             <Header header='statistics' />
-            <br />
             <Statistics good={good} neutral={neutral} bad={bad} />
         </div>
     )
