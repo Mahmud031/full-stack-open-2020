@@ -4,6 +4,8 @@ import Person from './components/Person'
 import Filter from './components/Filter'
 import personServices from './services/persons'
 import filterAllPersons from './services/filterPersons'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
     //const {names} = props
@@ -12,6 +14,8 @@ const App = () => {
     const [ newName, setNewName ] = useState('Martin Fowler')
     const [ newNumber, setNewNumber] = useState('39-44-5324523')
     const [ currentFilter, setFilter] = useState('')
+    const [ notification, setNotification] = useState(null)
+    const [notificationType, setNotificationType] = useState(null)
     var filteredPersons
 
     const hook = () => {
@@ -40,8 +44,18 @@ const App = () => {
                 }
                 personServices
                     .update(id,personObject)
-                    .then(updatedPerson => setPersons(persons.map(person => person.id !== id ? person : updatedPerson)))
-                    .catch(error => console.log("Failed to update"))
+                    .then(updatedPerson => {
+                        setPersons(persons.map(person => person.id !== id ? person : updatedPerson))
+                        setNotification(`Updated ${updatedPerson.name}`)
+                        setNotificationType('Notification')
+                        setTimeout(() => {setNotification(null)}, 5000)
+                    })
+                    .catch(error => {
+                        console.log("Failed to update")
+                        setNotification(`Information of ${personObject.name} has already been removed from the server`)
+                        setNotificationType('Error')
+                        setTimeout(() => {setNotification(null)}, 5000)
+                    })
             }
         }
         else {
@@ -55,6 +69,9 @@ const App = () => {
                     setPersons(persons.concat(addedPerson))
                     setNewName('')
                     setNewNumber('')
+                    setNotification(`Added ${addedPerson.name}`)
+                    setNotificationType('Notification')
+                    setTimeout(() => {setNotification(null)}, 5000)
                 })
                 .catch(error => {
                     console.log('Failed to add new name')
@@ -90,7 +107,12 @@ const App = () => {
         if(window.confirm(`Delete ${person.name}?`)) {
             personServices
             .deleteOne(id)
-            .then(() => setPersons(persons.filter(person => person.id !== id)))
+            .then(() => {
+                setPersons(persons.filter(person => person.id !== id))
+                setNotification(`Deleted ${person.name}`)
+                setNotificationType('Notification')
+                setTimeout(() => {setNotification(null)}, 5000)
+            })
             .catch(error => console.log("Failed to delete"))
         }
         
@@ -106,6 +128,7 @@ const App = () => {
     return (
     <div>
         <h2>Phonebook</h2>
+        <Notification message={notification} notificationType={notificationType} />
         <Filter handleFilterWords={handleFilterWords} />
         <h2>add a new</h2>
         <Personform 
