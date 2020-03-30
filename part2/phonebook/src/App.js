@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import Personform from './components/Personform'
-import Persons from './components/Persons'
+import Person from './components/Person'
 import Filter from './components/Filter'
-import axios from 'axios'
+import personServices from './services/persons'
+import filterAllPersons from './services/filterPersons'
 
 const App = () => {
     //const {names} = props
@@ -11,13 +12,13 @@ const App = () => {
     const [ newName, setNewName ] = useState('Martin Fowler')
     const [ newNumber, setNewNumber] = useState('39-44-5324523')
     const [ currentFilter, setFilter] = useState('')
+    var filteredPersons
 
     const hook = () => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                console.log(response.data)
-                setPersons(response.data)
+        personServices
+            .getAll()
+            .then(persons => {
+                setPersons(persons)
             })
     }
     useEffect(hook, [])
@@ -26,19 +27,39 @@ const App = () => {
     const addName = (event) => {
         event.preventDefault()
         // check if the name already exists
-        const isNameExist = persons.find(person => person.name === newName)
+        const personExists = persons.find(person => person.name === newName)
+        console.log(personExists)
 
-        if (isNameExist) {
-            alert(`${newName} is already added to phonebook`)
+        if (personExists) {
+            //alert(`${newName} is already added to phonebook`)
+            if(window.confirm(`${newName} is already added to the phonebook. Replace the old number with a new one?`)) {
+                var id = personExists.id
+                const personObject = {
+                    name: newName,
+                    number: newNumber
+                }
+                personServices
+                    .update(id,personObject)
+                    .then(updatedPerson => setPersons(persons.map(person => person.id !== id ? person : updatedPerson)))
+                    .catch(error => console.log("Failed to update"))
+            }
         }
         else {
             const personObject = {
                 name: newName,
                 number: newNumber
             }
-            setPersons(persons.concat(personObject))
-            setNewName('')
-            setNewNumber('')
+            personServices
+                .create(personObject)
+                .then( addedPerson => {
+                    setPersons(persons.concat(addedPerson))
+                    setNewName('')
+                    setNewNumber('')
+                })
+                .catch(error => {
+                    console.log('Failed to add new name')
+                })
+            
             console.log('button clicked', event.target)
         }
     }
@@ -60,17 +81,48 @@ const App = () => {
     // handle filter words
     const handleFilterWords = (event) => {
         console.log(event.target.value)
-        setFilter(event.target.value)  
+        setFilter(event.target.value) 
     }
 
+    // delete button press
+    const deleteButton = (person) => {
+        var id = person.id
+        if(window.confirm(`Delete ${person.name}?`)) {
+            personServices
+            .deleteOne(id)
+            .then(() => setPersons(persons.filter(person => person.id !== id)))
+            .catch(error => console.log("Failed to delete"))
+        }
+        
+    }
+
+    if (currentFilter.length === 0) {
+        filteredPersons = persons
+    }
+    else {
+        filteredPersons = filterAllPersons(persons, currentFilter)
+        console.log(filteredPersons) 
+    }
     return (
     <div>
         <h2>Phonebook</h2>
         <Filter handleFilterWords={handleFilterWords} />
         <h2>add a new</h2>
-        <Personform addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
+        <Personform 
+            addName={addName} 
+            newName={newName} 
+            handleNameChange={handleNameChange} 
+            newNumber={newNumber} 
+            handleNumberChange={handleNumberChange} 
+        />
         <h2>Numbers</h2>
-        <Persons persons={persons} filterString={currentFilter} />
+        {filteredPersons.map(person => 
+            <Person 
+                key={person.name}
+                person={person} 
+                deleteButton={() => deleteButton(person)}
+            />
+        )}
     </div>
     )
 }
